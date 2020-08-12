@@ -1,13 +1,44 @@
-Version: 1.0
+library (dplyr)
+# obtaining files 
+activity_label <- read.table(paste("~/UCI HAR Dataset/activity_labels.txt",sep=" ")
+feature <- read.table("~/UCI HAR Dataset/features.txt",sep=" ")
 
-RestoreWorkspace: Default
-SaveWorkspace: Default
-AlwaysSaveHistory: Default
 
-EnableCodeIndexing: Yes
-UseSpacesForTab: Yes
-NumSpacesForTab: 2
-Encoding: UTF-8
+# train data 
+x_train <- read.table(sep = " ", "~/UCI HAR Dataset/train/X_train.txt")
+y_train <- read.table(sep = " ", "~/UCI HAR Dataset/train/Y_train.txt")
+subject_train <- read.table(sep = " ", "~/UCI HAR Dataset/train/subject_train.txt")
 
-RnwWeave: Sweave
-LaTeX: pdfLaTeX
+# test data
+x_test <- read.table(sep = " ","~/UCI HAR Dataset/test/X_test.txt")
+y_test <- read.table(sep = " ", "~/UCI HAR Dataset/test/Y_test.txt")
+subject_test <- read.table(sep = " ","~/UCI HAR Dataset/test/subject_test.txt")
+
+
+# combining train and test datasets
+train <- cbind (subject_train,y_train,x_train)
+test <- cbind (subject_test,y_test,x_test)
+data <- rbind(test,train)
+colnames(data)<- c("SUBJECT","ACTIVITY",features[,2])
+
+# extracting columns with mean and std 
+columns <- colnames(data)
+req.col <- grep("mean|std|SUBJECT|ACTIVITY",columns)
+data <- data[,req.col]
+ 
+ #assigning names to different values in ACTIVITY column of data
+ data$ACTIVITY <- factor(data$ACTIVITY,levels=activity_label[,1],labels=activity_label[,2]
+ 
+ #making a tidy data set
+ Data <- data %>%  group_by(subject, activity) %>% summarise_each(funs(mean))
+ 
+ write.table(Data, "tidy_data.txt", row.names = FALSE)
+            
+ 
+  
+  
+  
+ 
+ 
+ 
+ 
